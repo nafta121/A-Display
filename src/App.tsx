@@ -158,6 +158,15 @@ export default function App() {
     }
   };
 
+  const handleAdminAccess = () => {
+    const pin = prompt("Enter Admin PIN:");
+    if (pin === "1234") {
+      window.location.href = "/admin.html";
+    } else if (pin !== null) {
+      alert("Incorrect PIN");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="h-screen w-screen bg-espresso flex items-center justify-center">
@@ -185,7 +194,10 @@ export default function App() {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
+            <div 
+              className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={handleAdminAccess}
+            >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 className="w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center text-espresso shadow-lg shadow-accent/20"
