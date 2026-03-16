@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:italic,wght@700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  
+  --color-espresso: #120f0e;
+  --color-latte: #d9c5b2;
+  --color-cream: #f5f2ed;
+  --color-accent: #c4a484;
+  --color-surface: #1c1917;
+
+  /* Material 3 Easing Tokens */
+  --ease-m3-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-m3-emphasized: cubic-bezier(0.3, 0, 0, 1);
+}
+
+@layer base {
+  body {
+    @apply bg-espresso text-cream font-sans antialiased;
+  }
+}
+
+/* Custom Utilities for M3 Motion */
+.transition-m3 {
+  transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: var(--ease-m3-standard);
+}
+
+.hover-scale-m3:hover {
+  transform: scale(1.02);
+}
+
+@keyframes m3-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-m3-fade-in {
+  animation: m3-fade-in 500ms var(--ease-m3-emphasized) forwards;
+}

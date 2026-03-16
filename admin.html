@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Espresso & Co.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-link.active {
+            background-color: #f3f4f6;
+            color: #111827;
+            border-right: 4px solid #c4a484;
+        }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-40 transition-transform -translate-x-full lg:translate-x-0">
+        <div class="p-6 border-b border-gray-100 flex items-center gap-3">
+            <div class="w-8 h-8 bg-[#c4a484] rounded-lg flex items-center justify-center text-white">
+                <i data-lucide="coffee" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-lg tracking-tight">Khusus Admin</span>
+        </div>
+        <nav class="mt-6">
+            <a href="#" onclick="switchTab('dashboard')" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-gray-50 transition-colors" id="tab-dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="#" onclick="switchTab('menu')" class="sidebar-link active flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-gray-50 transition-colors" id="tab-menu">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+                <span class="font-medium">Menu Items</span>
+            </a>
+            <a href="#" onclick="switchTab('categories')" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-gray-50 transition-colors" id="tab-categories">
+                <i data-lucide="layers" class="w-5 h-5"></i>
+                <span class="font-medium">Kategori</span>
+            </a>
+            <a href="#" onclick="switchTab('promo')" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-gray-50 transition-colors" id="tab-promo">
+                <i data-lucide="tag" class="w-5 h-5"></i>
+                <span class="font-medium">Promo & Diskon</span>
+            </a>
+            <div class="my-4 border-t border-gray-100"></div>
+            <a href="#" onclick="switchTab('theme')" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-gray-50 transition-colors" id="tab-theme">
+                <i data-lucide="palette" class="w-5 h-5"></i>
+                <span class="font-medium">Theme Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 min-h-screen flex flex-col">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-gray-500" onclick="toggleSidebar()">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h2 id="current-tab-title" class="text-xl font-semibold text-gray-800">Menu Items</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <button onclick="saveAllChanges()" class="bg-[#c4a484] text-white px-5 py-2 rounded-full font-medium text-sm hover:bg-[#b39373] transition-all shadow-lg shadow-[#c4a484]/20 flex items-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    Save Changes
+                </button>
+                <div class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white shadow-sm overflow-hidden">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=c4a484&color=fff" alt="Profile">
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="p-8 flex-1">
+            
+            <!-- Menu Items Tab -->
+            <section id="content-menu" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Daftar Menu</h3>
+                        <p class="text-gray-500 text-sm mt-1">Kelola semua item menu yang ditampilkan di layar pelanggan.</p>
+                    </div>
+                    <button onclick="openModal()" class="bg-gray-900 text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-gray-800 transition-all flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Add New Item
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Photo</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Nama Item</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Kategori</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Harga</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Status</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menu-table-body" class="divide-y divide-gray-100">
+                            <!-- Rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Theme Settings Tab -->
+            <section id="content-theme" class="tab-content hidden">
+                <div class="max-w-4xl">
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900">Theme Settings</h3>
+                        <p class="text-gray-500 text-sm mt-1">Sesuaikan tampilan visual layar menu digital Anda.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Brand Info -->
+                        <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                            <h4 class="font-bold text-lg border-b border-gray-100 pb-4">Identitas Brand</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Brand Name</label>
+                                    <input type="text" id="theme-brand-name" value="Espresso & Co." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] focus:border-transparent outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Logo URL</label>
+                                    <input type="text" id="theme-logo-url" placeholder="https://..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] focus:border-transparent outline-none transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colors -->
+                        <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                            <h4 class="font-bold text-lg border-b border-gray-100 pb-4">Palet Warna</h4>
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700">Primary Background</label>
+                                        <p class="text-xs text-gray-400">Warna latar belakang utama</p>
+                                    </div>
+                                    <input type="color" id="theme-bg-color" value="#120f0e">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700">Accent Color</label>
+                                        <p class="text-xs text-gray-400">Warna tombol dan highlight</p>
+                                    </div>
+                                    <input type="color" id="theme-accent-color" value="#c4a484">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700">Text Color</label>
+                                        <p class="text-xs text-gray-400">Warna teks utama</p>
+                                    </div>
+                                    <input type="color" id="theme-text-color" value="#f5f2ed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layout Settings -->
+                        <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6 md:col-span-2">
+                            <h4 class="font-bold text-lg border-b border-gray-100 pb-4">Konfigurasi Layout</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <label class="relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                                    <input type="radio" name="layout" value="grid" checked class="w-4 h-4 text-[#c4a484] border-gray-300 focus:ring-[#c4a484]">
+                                    <div class="ml-4">
+                                        <span class="block text-sm font-bold text-gray-900">Grid View</span>
+                                        <span class="block text-xs text-gray-500">Tampilan kotak modern (2-3 kolom)</span>
+                                    </div>
+                                </label>
+                                <label class="relative flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                                    <input type="radio" name="layout" value="list" class="w-4 h-4 text-[#c4a484] border-gray-300 focus:ring-[#c4a484]">
+                                    <div class="ml-4">
+                                        <span class="block text-sm font-bold text-gray-900">List View</span>
+                                        <span class="block text-xs text-gray-500">Tampilan daftar klasik (1 kolom)</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Placeholder for other tabs -->
+            <section id="content-dashboard" class="tab-content hidden">
+                <div class="bg-white p-12 rounded-2xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
+                    <i data-lucide="construction" class="w-12 h-12 text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900">Dashboard Analytics</h3>
+                    <p class="text-gray-500 max-w-xs">Modul statistik penjualan dan pengunjung sedang dalam pengembangan.</p>
+                </div>
+            </section>
+            <section id="content-categories" class="tab-content hidden">
+                <div class="bg-white p-12 rounded-2xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
+                    <i data-lucide="construction" class="w-12 h-12 text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900">Manajemen Kategori</h3>
+                    <p class="text-gray-500 max-w-xs">Modul untuk menambah dan mengurutkan kategori menu.</p>
+                </div>
+            </section>
+            <section id="content-promo" class="tab-content hidden">
+                <div class="bg-white p-12 rounded-2xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
+                    <i data-lucide="construction" class="w-12 h-12 text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900">Promo & Diskon</h3>
+                    <p class="text-gray-500 max-w-xs">Modul untuk mengatur jadwal promo otomatis.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="item-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-m3-fade-in">
+            <div class="p-8 border-b border-gray-100 flex justify-between items-center">
+                <h3 id="modal-title" class="text-2xl font-bold text-gray-900">Add New Menu Item</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="item-form" class="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+                <input type="hidden" id="item-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Image URL</label>
+                        <input type="text" id="item-image" required placeholder="https://images.unsplash.com/..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Item</label>
+                        <input type="text" id="item-name" required placeholder="Contoh: Caramel Macchiato" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori</label>
+                        <select id="item-category" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] outline-none transition-all bg-white">
+                            <option value="Espresso Bar">Espresso Bar</option>
+                            <option value="Signature Drinks">Signature Drinks</option>
+                            <option value="Non-Coffee">Non-Coffee</option>
+                            <option value="Pastries">Pastries</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
+                        <textarea id="item-desc" rows="3" placeholder="Jelaskan rasa atau bahan utama..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] outline-none transition-all"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Harga (Rp)</label>
+                        <input type="number" id="item-price" required placeholder="0" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Diskon (Opsional)</label>
+                        <input type="number" id="item-discount" placeholder="0" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#c4a484] outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                    <div>
+                        <span class="block font-bold text-sm text-gray-900">Highlight / Chef's Choice</span>
+                        <span class="block text-xs text-gray-500">Tampilkan badge spesial di menu</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="item-highlight" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#c4a484]"></div>
+                    </label>
+                </div>
+            </form>
+            <div class="p-8 border-t border-gray-100 flex gap-4">
+                <button onclick="closeModal()" class="flex-1 px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition-all">Cancel</button>
+                <button onclick="saveItem()" class="flex-1 bg-gray-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Dummy Data
+        let menuItems = [
+            { id: 1, name: 'Midnight Velvet', category: 'Signature Drinks', price: 75000, discount: 0, highlight: true, image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=100', desc: 'Activated charcoal, dark cocoa, vanilla.' },
+            { id: 2, name: 'Caffè Latte', category: 'Espresso Bar', price: 52000, discount: 45000, highlight: false, image: 'https://images.unsplash.com/photo-1541167760496-162955ed8a9f?auto=format&fit=crop&q=80&w=100', desc: 'Espresso with velvety steamed milk.' },
+            { id: 3, name: 'Butter Croissant', category: 'Pastries', price: 45000, discount: 0, highlight: false, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&q=80&w=100', desc: 'Classic French flaky pastry.' },
+            { id: 4, name: 'Ceremonial Matcha', category: 'Non-Coffee', price: 57000, discount: 0, highlight: true, image: 'https://images.unsplash.com/photo-1515823662972-da6a2e487001?auto=format&fit=crop&q=80&w=100', desc: 'Stone-ground Japanese green tea.' }
+        ];
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Update UI
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            // Update Header Title
+            const titles = {
+                dashboard: 'Dashboard Overview',
+                menu: 'Menu Items',
+                categories: 'Kategori Menu',
+                promo: 'Promo & Diskon',
+                theme: 'Theme Settings'
+            };
+            document.getElementById('current-tab-title').innerText = titles[tabId];
+
+            if (tabId === 'menu') renderMenuTable();
+            
+            // Close sidebar on mobile after click
+            if (window.innerWidth < 1024) toggleSidebar();
+        }
+
+        // Sidebar Toggle for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        // Render Table
+        function renderMenuTable() {
+            const tbody = document.getElementById('menu-table-body');
+            tbody.innerHTML = '';
+
+            menuItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-6 py-4">
+                        <img src="${item.image}" class="w-12 h-12 rounded-xl object-cover border border-gray-100" alt="${item.name}">
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-gray-900">${item.name}</div>
+                        <div class="text-xs text-gray-400 truncate max-w-[150px]">${item.desc}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-[10px] font-bold uppercase tracking-wider">${item.category}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-semibold text-gray-900">Rp ${item.price.toLocaleString()}</div>
+                        ${item.discount > 0 ? `<div class="text-[10px] text-red-500 line-through">Rp ${item.discount.toLocaleString()}</div>` : ''}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${item.highlight ? 
+                            '<span class="flex items-center gap-1 text-amber-600 text-xs font-bold"><i data-lucide="sparkles" class="w-3 h-3"></i> Highlight</span>' : 
+                            '<span class="text-gray-400 text-xs">Regular</span>'}
+                    </td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                        <button onclick="editItem(${item.id})" class="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                        <button onclick="deleteItem(${item.id})" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            lucide.createIcons();
+        }
+
+        // Modal Logic
+        function openModal(editId = null) {
+            const modal = document.getElementById('item-modal');
+            const form = document.getElementById('item-form');
+            const title = document.getElementById('modal-title');
+            
+            form.reset();
+            document.getElementById('item-id').value = '';
+            title.innerText = 'Add New Menu Item';
+
+            if (editId) {
+                const item = menuItems.find(i => i.id === editId);
+                if (item) {
+                    document.getElementById('item-id').value = item.id;
+                    document.getElementById('item-name').value = item.name;
+                    document.getElementById('item-category').value = item.category;
+                    document.getElementById('item-price').value = item.price;
+                    document.getElementById('item-discount').value = item.discount || '';
+                    document.getElementById('item-image').value = item.image;
+                    document.getElementById('item-desc').value = item.desc;
+                    document.getElementById('item-highlight').checked = item.highlight;
+                    title.innerText = 'Edit Menu Item';
+                }
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('item-modal').classList.add('hidden');
+        }
+
+        function saveItem() {
+            const id = document.getElementById('item-id').value;
+            const newItem = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('item-name').value,
+                category: document.getElementById('item-category').value,
+                price: parseInt(document.getElementById('item-price').value),
+                discount: parseInt(document.getElementById('item-discount').value) || 0,
+                image: document.getElementById('item-image').value,
+                desc: document.getElementById('item-desc').value,
+                highlight: document.getElementById('item-highlight').checked
+            };
+
+            if (id) {
+                const index = menuItems.findIndex(i => i.id === parseInt(id));
+                menuItems[index] = newItem;
+            } else {
+                menuItems.unshift(newItem);
+            }
+
+            renderMenuTable();
+            closeModal();
+            showNotification('Item berhasil disimpan!');
+        }
+
+        function editItem(id) {
+            openModal(id);
+        }
+
+        function deleteItem(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+                menuItems = menuItems.filter(i => i.id !== id);
+                renderMenuTable();
+                showNotification('Item dihapus.', 'error');
+            }
+        }
+
+        function saveAllChanges() {
+            showNotification('Semua perubahan berhasil disimpan ke server!');
+        }
+
+        function showNotification(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-8 right-8 px-6 py-3 rounded-2xl shadow-2xl text-white font-bold text-sm animate-m3-fade-in z-[100] ${type === 'success' ? 'bg-gray-900' : 'bg-red-600'}`;
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Initial Render
+        renderMenuTable();
+    </script>
+</body>
+</html>
