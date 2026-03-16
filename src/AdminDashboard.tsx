@@ -7,7 +7,8 @@ import {
   LogOut, 
   Save,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Menu as MenuIcon
 } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { MenuTable } from './MenuTable';
@@ -60,7 +61,7 @@ const INITIAL_THEME: ThemeSettingsType = {
 
 export const AdminDashboard: React.FC<{ onExit: () => void }> = ({ onExit }) => {
   const [activeTab, setActiveTab] = useState<Tab>('menu');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>(INITIAL_MENU);
   const [themeSettings, setThemeSettings] = useState<ThemeSettingsType>(INITIAL_THEME);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -140,18 +141,24 @@ export const AdminDashboard: React.FC<{ onExit: () => void }> = ({ onExit }) => 
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans antialiased">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans antialiased overflow-x-hidden">
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        isCollapsed={isSidebarCollapsed}
-        setIsCollapsed={setIsSidebarCollapsed}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Top Header */}
-        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header className="h-16 md:h-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
           <div className="flex items-center gap-4 flex-1">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg md:hidden"
+            >
+              <MenuIcon size={24} />
+            </button>
             <div className="relative w-full max-w-md hidden md:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input 
@@ -160,31 +167,34 @@ export const AdminDashboard: React.FC<{ onExit: () => void }> = ({ onExit }) => 
                 className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#c4a484] focus:bg-white outline-none transition-all text-sm"
               />
             </div>
+            <div className="md:hidden font-bold text-gray-900 truncate">
+              {activeTab === 'menu' ? 'Menu Management' : activeTab === 'theme' ? 'Theme Settings' : 'Dashboard'}
+            </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 md:gap-6">
             <button className="p-2 text-gray-400 hover:text-gray-900 transition-colors relative">
               <Bell size={20} />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
             </button>
-            <div className="h-8 w-px bg-gray-100" />
+            <div className="h-8 w-px bg-gray-100 hidden sm:block" />
             <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
+              <div className="text-right hidden lg:block">
                 <div className="text-sm font-bold text-gray-900">Admin User</div>
                 <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Store Manager</div>
               </div>
               <button 
                 onClick={onExit}
-                className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-rose-50 hover:text-rose-600 transition-all"
+                className="w-9 h-9 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-rose-50 hover:text-rose-600 transition-all"
               >
-                <LogOut size={20} />
+                <LogOut size={18} />
               </button>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="p-8 flex-1 overflow-y-auto">
+        <main className="p-4 md:p-8 flex-1 overflow-y-auto w-full max-w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -192,6 +202,7 @@ export const AdminDashboard: React.FC<{ onExit: () => void }> = ({ onExit }) => 
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
+              className="w-full max-w-full"
             >
               {renderContent()}
             </motion.div>
