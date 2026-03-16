@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Clock, Coffee, Croissant, Sparkles, Leaf, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AdminDashboard } from './AdminDashboard';
 
 // --- MENU DATA STRUCTURE ---
 // In a production environment, this would be fetched from an API.
@@ -87,6 +88,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isAdminMode, setIsAdminMode] = useState(false);
 
   const nextFeatured = useCallback(() => {
     setDirection(1);
@@ -161,7 +163,7 @@ export default function App() {
   const handleAdminAccess = () => {
     const pin = prompt("Enter Admin PIN:");
     if (pin === "1234") {
-      window.location.href = "/admin.html";
+      setIsAdminMode(true);
     } else if (pin !== null) {
       alert("Incorrect PIN");
     }
@@ -178,6 +180,10 @@ export default function App() {
         </motion.div>
       </div>
     );
+  }
+
+  if (isAdminMode) {
+    return <AdminDashboard onExit={() => setIsAdminMode(false)} />;
   }
 
   return (
